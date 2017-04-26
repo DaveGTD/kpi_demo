@@ -49,8 +49,8 @@ def main(host='localhost', port=8086):
             {
                 "measurement":"test_measurement",
                 "tags": {"tag_one":"value_one", "tag_two":"value_two"},
-				"time": datetime.datetime.now(),
-                # "time": randomDate("2015-03-04T21:08:12", "2016-03-04T21:08:12", random.random()),
+				# "time": datetime.datetime.now(),
+                "time": randomDate("2015-03-04T21:08:12", "2016-03-04T21:08:12", random.random()),
                 "fields": {
                             "test_data_one":randint(0,100)
                           }
