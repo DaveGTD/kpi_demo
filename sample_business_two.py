@@ -55,10 +55,10 @@ username = 'admin'
 password = 'admin'
 port = 8086
 dbname = 'mydb'
-host = '54.201.58.183' #IDB_THREE
-num_to_insert = 10
+host = '54.191.134.166' #IDB_TWO
+num_to_insert = 1000
 start_time = '2015-03-04T21:08:12'
-end_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+end_time = '2016-03-04T21:08:12'
 client = InfluxDBClient(host, port, username, password, dbname)
 client.switch_database(dbname)
 
