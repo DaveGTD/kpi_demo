@@ -1,12 +1,23 @@
 <?php
 
-define('START_TIME','2012-01-12 23:02:34');
-define('END_TIME','2013-01-12 23:02:34');
+// 2 args 1:start_date 2:end_date 
+// yyyy-mm-dd format
 
-$servername = "54.203.4.4";
+if($argc != 3)
+{
+    echo "Incorrect number of arguments, requires start and end date \n";
+    exit(-1); 
+}
+
+$start_date = $argv[1]; 
+$end_date = $argv[2]; 
+
+date_default_timezone_set('America/Los_Angeles');
+
+$servername = "159.203.248.139";
 $username = "remoteroot";
 $password = "remoteroot";
-$dbname = "combined";
+$dbname = "demo";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -17,134 +28,43 @@ if ($conn->connect_error)
 	die("Connection failed: " . $conn->connect_error);
 }
 
-function generate_random_date_between()
+function insert_ad_words_demo($start_date, $end_date)
 {
-	// returns timestamp
-	// Convert to timetamps
-	$min = strtotime(START_TIME);
-	$max = strtotime(END_TIME);
+    global $conn; 
 
-	// Generate random number using above bounds
-	$val = rand($min, $max);
+    $date = $start_date;
 
-	// Convert back to desired date format
-	// MySQL DATETIME format: date('Y-m-d H:i:s', $val)
-  return date('Y-m-d H:i:s', $val);
-	// return $val;
-}
-
-function insert_facebook($count)
-{
-    global $conn;
-    $state_list = array("UT", "MA", "TX", "CA", "NY", "AZ", "WA", "RI", "FL", "GA", "CT", "VA", "DC");
-    $cost_list = array(2, 4, 8);
-    $gender_list = array("M", "F");
-    $clicked_list = array(0, 1);
-    $converted_list = array(0, 1);
-
-    
-    for($i=0; $i<$count; $i++)
+    while($date <= $end_date)
     {
-        $clicked = $clicked_list[array_rand($clicked_list)];
-        $converted = $converted_list[array_rand($converted_list)];
-        $cost = $cost_list[array_rand($cost_list)];
-        $age = rand(18, 55);
-        $gender = $gender_list[array_rand($gender_list)];
-        $state = $state_list[array_rand($state_list)];
+        $r = rand(10, 1000); 
+        $period = $date;
+        $spend = (int) ($r/2); 
+        $clicks = (int) ($r*100);  
+        $ctr = (int) ($r/100);
+        $cpc = (int) ($r/500 + 20);
+        $impressions = (int) ($r*1000);
+        $conversion_rate = (int) ($r/40);  
+        $revenue_per_conversion = (int) ($r/200 + 20); 
+        $conversions = (int) ($r*10);
+        $unique_customers_added = (int) ($r/50 + 5);  
 
-        // $ip = "".mt_rand(0,255).".".mt_rand(0,255).".".mt_rand(0,255).".".mt_rand(0,255);
-
-        $sql = "INSERT INTO facebook VALUES (DEFAULT, $clicked, $converted, $cost, $age, '$gender', '$state')";
-
-        if ($conn->query($sql) === FALSE)
-		{
-			echo "ERROR:  $sql : $conn->error \n";
-		}
-    }
-}
-
-
-function insert_website($count)
-{
-    global $conn;
-    $product_list = array("Bat", "Ball", "Helmet", "Mitt");
-    $revenue_list = array(20, 25, 45, 100, 175, 75);
-    
-    for($i=0; $i<$count; $i++)
-    {   
-        $ip = "".mt_rand(0,255).".".mt_rand(0,255).".".mt_rand(0,255).".".mt_rand(0,255);
-        $time_spent = rand(1, 360);
-        $product = $product_list[array_rand($product_list)];
-        $revenue = $revenue_list[array_rand($revenue_list)];
-
-        $sql = "INSERT INTO website VALUES (DEFAULT, '$ip', $time_spent, '$product', $revenue)";
+        $sql = "INSERT INTO ad_words_demo VALUES (DEFAULT, '$period', $spend, $clicks, $ctr, $cpc, $impressions, $conversion_rate, $revenue_per_conversion, $conversions, $unique_customers_added, DEFAULT)";
 
         if ($conn->query($sql) === FALSE)
 		{
 			echo "ERROR:  $sql : $conn->error \n";
-		}
+        }
+        
+        // echo " period spend clicks ctr cpc impressions conversion_rate revenue_per_conversion conversions unique_customers_added \n";
+        // echo " $period $spend $clicks $ctr $cpc $impressions $conversion_rate $revenue_per_conversion $conversions $unique_customers_added \n"; 
+
+        $date = date('Y-m-d', strtotime($date . ' +1 day'));
+
     }
+     
 }
 
-function insert_retail($count)
-{
-    global $conn;
-    $product_list = array("Bat", "Ball", "Helmet", "Mitt");
-    $revenue_list = array(45, 100, 75, 200);
-    
-    for($i=0; $i<$count; $i++)
-    {   
-        $product = $product_list[array_rand($product_list)];
-        $revenue = $revenue_list[array_rand($revenue_list)];
-
-        $sql = "INSERT INTO retail VALUES (DEFAULT, '$product', $revenue)";
-
-        if ($conn->query($sql) === FALSE)
-		{
-			echo "ERROR:  $sql : $conn->error \n";
-		}
-    }
-}
-
-function insert_plena($count)
-{
-    global $conn;
-    $state_list = array("UT", "MA", "TX", "CA", "NY", "AZ", "WA", "RI", "FL", "GA", "CT", "VA", "DC");
-    $cost_list = array(2, 4, 8, 18, 12, 35);
-    $gender_list = array("M", "F");
-    $clicked_list = array(0, 1);
-    $converted_list = array(0, 1);
-    $product_list = array("Bat", "Ball", "Helmet", "Mitt");
-    $revenue_list = array(45, 100, 75, 200);
-    $source_list = array("retail", "website");
-    $referred_list = array("facebook", "google_ads", "trade_show", "direct_mail");
-    
-    for($i=0; $i<$count; $i++)
-    {
-        $age = rand(18, 55);
-        $gender = $gender_list[array_rand($gender_list)];
-        $state = $state_list[array_rand($state_list)];
-        $ip = "".mt_rand(0,255).".".mt_rand(0,255).".".mt_rand(0,255).".".mt_rand(0,255);
-        $product = $product_list[array_rand($product_list)];
-        $revenue = $revenue_list[array_rand($revenue_list)];
-        $source = $source_list[array_rand($source_list)];
-        $referred = $referred_list[array_rand($referred_list)];
-        $cost = $cost_list[array_rand($cost_list)];
-        $visit_time = rand(0, 1000);
-
-        $sql = "INSERT INTO plena VALUES (DEFAULT, $age, '$gender', '$state', '$ip', '$product', $revenue, '$source', '$referred', $cost, $visit_time)";
-
-        if ($conn->query($sql) === FALSE)
-		{
-			echo "ERROR:  $sql : $conn->error \n";
-		}
-    }
-}
-
-// insert_facebook(100);
-// insert_website(100);
-// insert_retail(200);
-insert_plena(200);
+insert_ad_words_demo($start_date, $end_date);
 
 // close MySQL connection
 $conn->close();
